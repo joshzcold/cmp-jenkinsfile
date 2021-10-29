@@ -38,25 +38,40 @@ function source:complete(params, callback)
     end
   end
 
+  local _vals = {}
   local items = {}
+  local last_item
   local file = io.open(params.option.gdsl_file)
   if file ~= nil then
 
     local lines = file:lines()
     for line in lines do
-      local _name, _type, _params, _doc = line:match("name: '(.*)', type: '(.*)', params: (%[.*%]), doc: '(.*)'")
+      local _name, _type, _params, _doc = line:match("name: '(.*)', type: '(.*)', namedParams: (%[.*%]), doc: '(.*)'")
       if _params == nil then
-        _name, _type, _params, _doc = line:match("name: '(.*)', type: '(.*)', namedParams: (%[.*%]), doc: '(.*)'")
+        _name, _type, _params, _doc = line:match("name: '(.*)', type: '(.*)', params: (%[.*%]), doc: '(.*)'")
       end
 
       if _name ~= nil and _type ~= nil and _params ~= nil and _doc ~= nil then
         -- print("name: "..name.." type: "..type.." params: "..params.." doc: "..doc)
-        table.insert(items, {
+        if _vals[_name] then
+          _vals[_name].detail = _vals[_name].detail.."\n---------------\n".._params
+        else
+          _vals[_name] = {
             label = _name,
-            detail = _doc.."\n".._params
-          })
+            detail = _doc.."\n\n".._params
+          }
+        end
       end
     end
+
+    for _, v in pairs(_vals) do
+      table.insert(items, {
+          label = v.label,
+          detail = v.detail,
+          dup = 0
+        })
+    end
+
     io.close(file)
     callback({
         items = items,
