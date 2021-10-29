@@ -1,7 +1,7 @@
 local source = {}
 
 local defaults = {
-  gdsl_file = "",
+  gdsl_file = os.getenv("HOME").."/.cache/nvim/cmp-jenkinsfile.gdsl",
   jenkins_url = ""
 }
 
@@ -29,24 +29,20 @@ function source:complete(params, callback)
       gdsl_file = { params.option.gdsl_file, 'string', '`opts.gdsl_file` must be `string`' },
       jenkins_url = { params.option.jenkins_url, 'string', '`opts.jenkins_url` must be `string`' },
     })
-  local _gdsl_file_path = nil
-  if params.option.gdsl_url ~= "" then
-    if not file_exists("/tmp/jenkins.gdsl") or file_is_empty("/tmp/jenkins.gdsl") then
-      local handle = io.popen("curl -s -X GET "..params.option.jenkins_url.."/pipeline-syntax/gdsl".." > /tmp/jenkins.gdsl")
+  if params.option.jenkins_url ~= "" then
+    if not file_exists(params.option.gdsl_file) or file_is_empty(params.option.gdsl_file) then
+      local handle = io.popen("curl -s -X GET "..params.option.jenkins_url.."/pipeline-syntax/gdsl".." > "..params.option.gdsl_file)
       local result = handle:read("*a")
       print(result)
       handle:close()
     end
-    _gdsl_file_path = "/tmp/jenkins.gdsl"
-  elseif params.option.gdsl_file ~= "" then
-    _gdsl_file_path = params.option.gdsl_file
   end
 
-  if _gdsl_file_path ~= nil then
-    local items = {}
-    local file = io.open(_gdsl_file_path)
-    local lines = file:lines()
+  local items = {}
+  local file = io.open(params.option.gdsl_file)
+  if file ~= nil then
 
+    local lines = file:lines()
     for line in lines do
       local _name, _type, _params, _doc = line:match("name: '(.*)', type: '(.*)', params: (%[.*%]), doc: '(.*)'")
       if params == nil then
