@@ -45,7 +45,7 @@ function source:complete(params, callback)
     local lines = file:lines()
     for line in lines do
       local _name, _type, _params, _doc = line:match("name: '(.*)', type: '(.*)', params: (%[.*%]), doc: '(.*)'")
-      if params == nil then
+      if _params == nil then
         _name, _type, _params, _doc = line:match("name: '(.*)', type: '(.*)', namedParams: (%[.*%]), doc: '(.*)'")
       end
 
