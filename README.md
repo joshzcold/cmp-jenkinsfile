@@ -39,7 +39,7 @@ it will only activate the `jenkinsfile` source if the file type = `Jenkinsfile`
  autocmd FileType Jenkinsfile lua require'cmp'.setup.buffer {
     \   sources = {
     \     { name = 'jenkinsfile',
-    \        opts = {
+    \        option = {
     \            jenkins_url = "http://jenkins:8080"
     \        }
     \     },
