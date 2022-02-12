@@ -30,22 +30,16 @@ defaults to: `$HOME/.cache/nvim/cmp-jenkinsfile.gdsl`
 
 **Recommended Config:**
 
-put this in your `init.lua`
-
-it will only activate the `jenkinsfile` source if the file type = `Jenkinsfile`
-
 ```lua
- vim.cmd[[
- autocmd FileType Jenkinsfile lua require'cmp'.setup.buffer {
-    \   sources = {
-    \     { name = 'jenkinsfile',
-    \        option = {
-    \            jenkins_url = "http://jenkins:8080"
-    \        }
-    \     },
-    \     { name = 'buffer' },   -- you have to list out other sources you 
-    \     { name = 'ultisnips' } -- want to be present in Jenkinsfile
-    \   },
-    \ }
- ]]
+cmp.setup({
+  cmp.setup.filetype("Jenkinsfile", {
+    sources = {
+      {
+        name = "jenkinsfile",
+        option = {
+          jenkins_url = "https://jenkins.co",
+        },
+      },
+    },
+  }),
 ```
