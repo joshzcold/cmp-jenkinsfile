@@ -56,7 +56,7 @@ function source:complete(params, callback)
     if not file_exists(params.option.gdsl_file) or file_is_empty(params.option.gdsl_file) then
       local curl_cmd = build_curl(params.option.jenkins_url, params.option.http)
       local handle = io.popen(curl_cmd.." > "..params.option.gdsl_file)
-     if handle ~= nil then
+      if handle ~= nil then
         local result = handle:read("*a")
         print(result)
         handle:close()
