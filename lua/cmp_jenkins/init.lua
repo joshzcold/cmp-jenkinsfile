@@ -11,12 +11,12 @@ local defaults = {
   },
 }
 
-function file_exists(name)
+local function file_exists(name)
   local f=io.open(name,"r")
   if f~=nil then io.close(f) return true else return false end
 end
 
-function file_is_empty(name)
+local function file_is_empty(name)
   local file = io.open(name,"r")
   if not file then return true end
   local content = file:read "*a"
@@ -24,8 +24,8 @@ function file_is_empty(name)
   return res == nil
 end
 
-function build_curl(jenkins_url, opts)
-    local cmd = "curl -X GET "..jenkins_url.."/pipeline-syntax/gdsl"
+local function build_curl(jenkins_url, opts)
+    local cmd = "curl --silent -X GET "..jenkins_url.."/pipeline-syntax/gdsl"
     if opts.proxy ~= "" then
         cmd = cmd.." --proxy "..opts.proxy
     end
@@ -56,15 +56,16 @@ function source:complete(params, callback)
     if not file_exists(params.option.gdsl_file) or file_is_empty(params.option.gdsl_file) then
       local curl_cmd = build_curl(params.option.jenkins_url, params.option.http)
       local handle = io.popen(curl_cmd.." > "..params.option.gdsl_file)
-      local result = handle:read("*a")
-      print(result)
-      handle:close()
+     if handle ~= nil then
+        local result = handle:read("*a")
+        print(result)
+        handle:close()
+      end
     end
   end
 
   local _vals = {}
   local items = {}
-  local last_item
   local file = io.open(params.option.gdsl_file)
   if file ~= nil then
 
