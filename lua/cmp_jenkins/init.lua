@@ -2,7 +2,13 @@ local source = {}
 
 local defaults = {
   gdsl_file = os.getenv("HOME").."/.cache/nvim/cmp-jenkinsfile.gdsl",
-  jenkins_url = ""
+  jenkins_url = "",
+  http = {
+      basic_auth_user = "",
+      basic_auth_password = "",
+      ca_cert = "",
+      proxy = "",
+  },
 }
 
 function file_exists(name)
@@ -18,6 +24,19 @@ function file_is_empty(name)
   return res == nil
 end
 
+function build_curl(jenkins_url, opts)
+    local cmd = "curl -X GET "..jenkins_url.."/pipeline-syntax/gdsl"
+    if opts.proxy ~= "" then
+        cmd = cmd.." --proxy "..opts.proxy
+    end
+    if opts.ca_cert ~= "" then
+        cmd = cmd.." --cacert "..opts.ca_cert
+    end
+    if opts.basic_auth_user ~= "" then
+        cmd = cmd.."--basic -u "..opts.basic_auth_user..":"..opts.basic_auth_password
+    end
+    return cmd
+end
 
 function source.new()
   return setmetatable({}, { __index = source })
@@ -27,9 +46,16 @@ function source:complete(params, callback)
   params.option = vim.tbl_deep_extend('keep', params.option, defaults)
   vim.validate('gdsl_file', params.option.gdsl_file, 'string', false, '`opts.gdsl_file` must be `string`')
   vim.validate('jenkins_url', params.option.jenkins_url, 'string', false, '`opts.jenkins_url` must be `string`')
+  vim.validate('http', params.option.http, 'table', false, '`opts.http` must be `table`')
+  vim.validate('http.basic_auth_user', params.option.http.basic_auth_user, 'string', false, '`http.basic_auth_user` must be `string`')
+  vim.validate('http.basic_auth_password', params.option.http.basic_auth_password, 'string', false, '`http.basic_auth_password` must be `string`')
+  vim.validate('http.ca_cert', params.option.http.ca_cert, 'string', false, '`http.ca_cert` must be `string`')
+  vim.validate('http.proxy', params.option.http.proxy, 'string', false, '`http.proxy` must be `string`')
+
   if params.option.jenkins_url ~= "" then
     if not file_exists(params.option.gdsl_file) or file_is_empty(params.option.gdsl_file) then
-      local handle = io.popen("curl -s -X GET "..params.option.jenkins_url.."/pipeline-syntax/gdsl".." > "..params.option.gdsl_file)
+      local curl_cmd = build_curl(params.option.jenkins_url, params.option.http)
+      local handle = io.popen(curl_cmd.." > "..params.option.gdsl_file)
       local result = handle:read("*a")
       print(result)
       handle:close()
