@@ -27,6 +27,11 @@ If `jenkins_url` is supplied then this file will be written to. If `jenkins_url`
 
 defaults to: `$HOME/.cache/nvim/cmp-jenkinsfile.gdsl`
 
+**http**: optional http configuration
+- **basic_auth_user**: username for basic authentication
+- **basic_auth_password**: password for basic authentication
+- **ca_cert**: path to CA certificate file
+- **proxy**: proxy URL
 
 **Recommended Config:**
 
@@ -38,6 +43,29 @@ cmp.setup({
         name = "jenkinsfile",
         option = {
           jenkins_url = "https://jenkins.co",
+        },
+      },
+    },
+  }),
+```
+
+**Full Config:**
+
+```lua
+cmp.setup({
+  cmp.setup.filetype("Jenkinsfile", {
+    sources = {
+      {
+        name = "jenkinsfile",
+        option = {
+          jenkins_url = "https://jenkins.co",
+          gdsl_file = "~/.cache/nvim/cmp-jenkinsfile.gdsl",
+          http = {
+            http_basic_user = "admin",
+            http_basic_password = "adminadmin",
+            ca_cert = "/etc/ssl/certs/cacert",
+            proxy = "http://internal-proxy:8000",
+          },
         },
       },
     },
