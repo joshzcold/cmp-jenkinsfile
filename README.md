@@ -61,8 +61,8 @@ cmp.setup({
           jenkins_url = "https://jenkins.co",
           gdsl_file = "~/.cache/nvim/cmp-jenkinsfile.gdsl",
           http = {
-            http_basic_user = "admin",
-            http_basic_password = "adminadmin",
+            basic_auth_user = "admin",
+            basic_auth_password = "adminadmin",
             ca_cert = "/etc/ssl/certs/cacert",
             proxy = "http://internal-proxy:8000",
           },
