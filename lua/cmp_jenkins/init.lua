@@ -33,7 +33,7 @@ local function build_curl(jenkins_url, opts)
         cmd = cmd.." --cacert "..opts.ca_cert
     end
     if opts.basic_auth_user ~= "" then
-        cmd = cmd.."--basic -u "..opts.basic_auth_user..":"..opts.basic_auth_password
+        cmd = cmd.." --basic --user "..opts.basic_auth_user..":"..opts.basic_auth_password
     end
     return cmd
 end
